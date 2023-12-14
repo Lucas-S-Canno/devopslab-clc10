@@ -1,21 +1,26 @@
-# Use uma Imagem Official do Python
+# Use an Official Python Image
 FROM python:3
 
-# Adicionando um usuário de sistema
-RUN adduser --system --home /home/myapp  myapp
-USER myapp
+# Add a non-root user for running the application
+RUN adduser --system --home /home/myapp myapp
 
-# Definindo o diretório onde a aplicação será armazenada
+# Set the working directory for the application
 WORKDIR /home/myapp
 
-#Definindo o local onde o binário do gunicorn é instalado
+# Set the location where the gunicorn binary is installed
 ENV PATH="/home/myapp/.local/bin:${PATH}"
 
-# Copiar os arquivos da pasta local para dentro do container
+# Copy files from the local directory to the container
 COPY --chown=myapp:nogroup app.py requirements.txt /home/myapp/
 
-# Instalar as dependências de Python de acordo com o que foi desenvolvido na aplicação e que está declarado no arquivo requirements.txt.
+# Install Python dependencies specified in requirements.txt
 RUN pip install --user --trusted-host pypi.python.org -r requirements.txt
 
-# Garante que será iniciado a aplicação.
+# Change ownership of the application directory
+RUN chown -R myapp:nogroup /home/myapp
+
+# Switch to the non-root user
+USER myapp
+
+# Ensure the application starts
 CMD ["gunicorn", "app:app"]
