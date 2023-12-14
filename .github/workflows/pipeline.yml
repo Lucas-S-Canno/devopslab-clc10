@@ -22,6 +22,9 @@ jobs:
       - name: Install Requirements
         run:  pip install flask pytest pytest-cov
 
+      - name: Install Requirements
+        run:  pip install flask pytest pytest-cov flask-wtf
+
       - name: Unit Test
         run: |
           coverage run --source=app -m pytest test.py
